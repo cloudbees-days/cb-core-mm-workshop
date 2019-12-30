@@ -1,4 +1,4 @@
-FROM cloudbees/cloudbees-core-mm:2.190.3.2
+FROM cloudbees/cloudbees-core-mm:2.204.1.3-alpine
 
 LABEL maintainer "kmadel@cloudbees.com"
 
