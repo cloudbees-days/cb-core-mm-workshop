@@ -138,8 +138,7 @@ notification-api:1.2
 operations-center-notification:1.0
 antisamy-markup-formatter:1.6
 job-dsl:1.76
-gitlab-api:1.0.5
-gitlab-branch-source:1.4.0
 pipeline-event-step:1.7
 devoptics:1.1863
+config-file-provider:3.6.3
 pipeline-maven:3.8.2
