@@ -140,5 +140,5 @@ antisamy-markup-formatter:1.6
 job-dsl:1.76
 pipeline-event-step:1.7
 devoptics:1.1863
-config-file-provider:3.6.3
+config-file-provider:3.6.2
 pipeline-maven:3.8.2
