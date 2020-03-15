@@ -11,3 +11,4 @@ pipeline-event-step:1.7
 devoptics:1.1863
 config-file-provider:3.6.2
 pipeline-maven:3.8.2
+script-security:1.70
