@@ -133,11 +133,11 @@ blueocean-pipeline-editor:1.19.0
 blueocean-i18n:1.19.0
 blueocean-autofavorite:1.2.4
 blueocean:1.19.0
-pipeline-utility-steps:2.3.1
+pipeline-utility-steps:2.5.0
 notification-api:1.2
 operations-center-notification:1.0
 antisamy-markup-formatter:1.6
-job-dsl:1.76
+job-dsl:1.77
 pipeline-event-step:1.7
 devoptics:1.1863
 config-file-provider:3.6.2
