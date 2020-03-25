@@ -149,9 +149,9 @@ spec:
         sh &quot;curl -O http://teams-\${masterName}/teams-\${masterName}/jnlpJars/jenkins-cli.jar&quot;
         withCredentials([usernamePassword(credentialsId: &apos;cli-username-token&apos;, usernameVariable: &apos;USERNAME&apos;, passwordVariable: &apos;PASSWORD&apos;)]) {
           sh &quot;&quot;&quot;
-            alias cli=&apos;java -jar jenkins-cli.jar -s \\&apos;http://teams-ops/teams-ops/\\&apos; -auth \$USERNAME:\$PASSWORD&apos;
+            alias cli=&apos;java -jar jenkins-cli.jar -s \\&apos;http://cjoc/cjoc/\\&apos; -auth \$USERNAME:\$PASSWORD&apos;
             echo &quot;Restarting Master \${masterName}&quot;
-            cli build &apos;master-stop-start&apos;  -p masterName=\${masterName}
+            cli managed-master-restart  teams/\${masterName}
           &quot;&quot;&quot;
         }
       }
