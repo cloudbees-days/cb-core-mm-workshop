@@ -12,8 +12,6 @@ if (disableScript.exists()) {
     return
 }
 
-sleep 60000
-
 def j = Jenkins.instance
 Set<String> allowedTypes = new TreeSet <String>()
 def masterFolder = j.getItem(System.properties.'MASTER_NAME')
