@@ -71,7 +71,7 @@ def configXml = """
         <hudson.model.StringParameterDefinition>
           <name>k8sNamespace</name>
           <description>Do not change the default value unless asked to do so by your instructor.</description>
-          <defaultValue>core</defaultValue>
+          <defaultValue>cloudbees-core</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
@@ -150,8 +150,8 @@ spec:
         withCredentials([usernamePassword(credentialsId: &apos;cli-username-token&apos;, usernameVariable: &apos;USERNAME&apos;, passwordVariable: &apos;PASSWORD&apos;)]) {
           sh &quot;&quot;&quot;
             alias cli=&apos;java -jar jenkins-cli.jar -s \\&apos;http://cjoc/cjoc/\\&apos; -auth \$USERNAME:\$PASSWORD&apos;
-            echo &quot;Restarting Master \${masterName}&quot;
-            cli managed-master-restart  teams/\${masterName}
+            echo &quot;Reprovisioning Master \${masterName}&quot;
+            cli managed-master-reprovision  teams/\${masterName}
           &quot;&quot;&quot;
         }
       }
