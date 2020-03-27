@@ -12,6 +12,8 @@ if (disableScript.exists()) {
     return
 }
 
+sleep 60000
+
 def j = Jenkins.instance
 Set<String> allowedTypes = new TreeSet <String>()
 def masterFolder = j.getItem(System.properties.'MASTER_NAME')
@@ -152,11 +154,13 @@ spec:
         container(&apos;utils&apos;) {
           //download CLI client from current master
           sh &quot;curl -O http://teams-\${masterName}/teams-\${masterName}/jnlpJars/jenkins-cli.jar&quot;
+          sh &quot;curl -O https://raw.githubusercontent.com/cloudbees-days/cb-core-oc-workshop/master/stopAndStartMaster.groovy&quot;
+          sh &quot;sed -i &apos;s#REPLACE_MASTER_NAME#\${masterName}#&apos; stopAndStartMaster.groovy&quot;
           withCredentials([usernamePassword(credentialsId: &apos;cli-username-token&apos;, usernameVariable: &apos;USERNAME&apos;, passwordVariable: &apos;PASSWORD&apos;)]) {
             sh &quot;&quot;&quot;
-              alias cli=&apos;java -jar jenkins-cli.jar -s \\&apos;http://cjoc/cjoc/\\&apos; -auth \$USERNAME:\$PASSWORD&apos;
+              alias cli=&apos;java -jar jenkins-cli.jar -s \&apos;http://cjoc/cjoc/\&apos; -auth \$USERNAME:\$PASSWORD&apos;
               echo &quot;Restart Master \${masterName}&quot;
-              cli managed-master-restart  teams/\${masterName}
+              cli groovy = &lt; stopAndStartMaster.groovy
             &quot;&quot;&quot;
           }
         }
