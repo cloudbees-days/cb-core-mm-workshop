@@ -111,48 +111,54 @@ spec:
       steps {
         echo &quot;GitHub Username:  \${githubUsername}&quot;
         echo &quot;GitHub Organization: \${githubOrg}&quot;
-        sh(script: &quot;&quot;&quot;
-          curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/pipeline-library/forks
-          curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/forks
-          curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/core-config-bundle/forks
-          curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/microblog-frontend/forks
-          curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/microblog-backend/forks
-         &quot;&quot;&quot;)
+        container(&apos;utils&apos;) {
+          sh(script: &quot;&quot;&quot;
+            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/pipeline-library/forks
+            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/forks
+            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/core-config-bundle/forks
+            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/microblog-frontend/forks
+            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/microblog-backend/forks
+          &quot;&quot;&quot;)
+         }
       }
     }
     stage(&apos;Create Config Bundle&apos;) {
       steps {
         echo &quot;master name:  \${masterName}&quot;
         echo &quot;encrypted token: \${encryptedPAT}&quot;
-        sh(script: &quot;&quot;&quot;
-            mkdir core-config-bundle
-            cd core-config-bundle
-            git init
-            git config user.email &quot;deployBot@cb-sa.io&quot;
-            git config user.name &quot;\${githubUsername}&quot;
-            git remote add origin https://\${githubUsername}:\${githubPAT}@github.com/\${githubOrg}/core-config-bundle.git
-            git pull origin master
-            sed -i.bak &apos;s#REPLACE_GITHUB_ORG#\${githubOrg}#&apos; jenkins.yaml
-            sed -i.bak &apos;s#REPLACE_WITH_JENKINS_ENCODED_PAT#\${encryptedPAT}#&apos; jenkins.yaml
-            sed -i.bak &apos;s#REPLACE_WITH_YOUR_GITHUB_USERNAME#\${githubUsername}#&apos; jenkins.yaml
-            git add *
-            git commit -a -m &apos;updating \${githubOrg}/core-config bundle with encrypted GitHub PAT and GitHub Username&apos;
-            git push -u origin master
-        &quot;&quot;&quot;)
+        container(&apos;utils&apos;) {
+          sh(script: &quot;&quot;&quot;
+              mkdir core-config-bundle
+              cd core-config-bundle
+              git init
+              git config user.email &quot;deployBot@cb-sa.io&quot;
+              git config user.name &quot;\${githubUsername}&quot;
+              git remote add origin https://\${githubUsername}:\${githubPAT}@github.com/\${githubOrg}/core-config-bundle.git
+              git pull origin master
+              sed -i.bak &apos;s#REPLACE_GITHUB_ORG#\${githubOrg}#&apos; jenkins.yaml
+              sed -i.bak &apos;s#REPLACE_WITH_JENKINS_ENCODED_PAT#\${encryptedPAT}#&apos; jenkins.yaml
+              sed -i.bak &apos;s#REPLACE_WITH_YOUR_GITHUB_USERNAME#\${githubUsername}#&apos; jenkins.yaml
+              git add *
+              git commit -a -m &apos;updating \${githubOrg}/core-config bundle with encrypted GitHub PAT and GitHub Username&apos;
+              git push -u origin master
+          &quot;&quot;&quot;)
+        }
         container(&apos;kubectl&apos;) {
           sh &quot;mkdir \${masterName}&quot;
           sh &quot;cp core-config-bundle/*.yaml \${masterName}&quot;
           sh &quot;kubectl cp --namespace \${k8sNamespace} \${masterName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/&quot;
           sh &quot;kubectl exec --namespace \${k8sNamespace} cjoc-0 -- sed -i \\&quot;/&lt;\\\\/access&gt;/i\\\\&lt;entry&gt;&lt;string&gt;\${masterName}&lt;/string&gt;&lt;hudson.util.Secret&gt;\${entrySecret}&lt;/hudson.util.Secret&gt;&lt;/entry&gt;\\&quot;  /var/jenkins_home/jcasc-bundles-store/security.xml&quot;
         }
-        //download CLI client from current master
-        sh &quot;curl -O http://teams-\${masterName}/teams-\${masterName}/jnlpJars/jenkins-cli.jar&quot;
-        withCredentials([usernamePassword(credentialsId: &apos;cli-username-token&apos;, usernameVariable: &apos;USERNAME&apos;, passwordVariable: &apos;PASSWORD&apos;)]) {
-          sh &quot;&quot;&quot;
-            alias cli=&apos;java -jar jenkins-cli.jar -s \\&apos;http://cjoc/cjoc/\\&apos; -auth \$USERNAME:\$PASSWORD&apos;
-            echo &quot;Reprovisioning Master \${masterName}&quot;
-            cli managed-master-reprovision  teams/\${masterName}
-          &quot;&quot;&quot;
+        container(&apos;utils&apos;) {
+          //download CLI client from current master
+          sh &quot;curl -O http://teams-\${masterName}/teams-\${masterName}/jnlpJars/jenkins-cli.jar&quot;
+          withCredentials([usernamePassword(credentialsId: &apos;cli-username-token&apos;, usernameVariable: &apos;USERNAME&apos;, passwordVariable: &apos;PASSWORD&apos;)]) {
+            sh &quot;&quot;&quot;
+              alias cli=&apos;java -jar jenkins-cli.jar -s \\&apos;http://cjoc/cjoc/\\&apos; -auth \$USERNAME:\$PASSWORD&apos;
+              echo &quot;Restart Master \${masterName}&quot;
+              cli managed-master-restart  teams/\${masterName}
+            &quot;&quot;&quot;
+          }
         }
       }
     }
