@@ -6,7 +6,7 @@ import java.util.logging.Logger
 //adds a folder to the bluesteel folder with a filter on specific job templates
 Logger logger = Logger.getLogger("init.init_05_create-workshop_setup_job.groovy")
 println "init_05_create-workshop_setup_job.groovy"
-logger.info("BEGIN create-workshop_setup_job")
+logger.info("BEGIN docker label for create-workshop_setup_job")
 File disableScript = new File(Jenkins.getInstance().getRootDir(), ".disable-create_template_folder-script")
 if (disableScript.exists()) {
     logger.info("DISABLE create_template_folder script")
@@ -14,10 +14,15 @@ if (disableScript.exists()) {
 }
 
 def j = Jenkins.instance
+def masterFolder = j.getItem(System.properties.'MASTER_NAME')
 
 def name = 'workshop-setup'
 logger.info("creating $name job")
-
+def job = masterFolder.getItem(name)
+if (job != null) {
+  logger.info("job $name already existed so deleting")
+  job.delete()
+}
 println "--> creating $name"
 
 def configXml = """
@@ -150,7 +155,7 @@ spec:
           sh &quot;sed -i &apos;s#REPLACE_MASTER_NAME#\${masterName}#&apos; stopAndStartMaster.groovy&quot;
           withCredentials([usernamePassword(credentialsId: &apos;cli-username-token&apos;, usernameVariable: &apos;USERNAME&apos;, passwordVariable: &apos;PASSWORD&apos;)]) {
             sh &quot;&quot;&quot;
-              alias cli=&apos;java -jar jenkins-cli.jar -s \&apos;http://cjoc/cjoc/\&apos; -auth \$USERNAME:\$PASSWORD&apos;
+              alias cli=&apos;java -jar jenkins-cli.jar -s \\&apos;http://cjoc/cjoc/\\&apos; -auth \$USERNAME:\$PASSWORD&apos;
               echo &quot;Restart Master \${masterName}&quot;
               cli groovy = &lt; stopAndStartMaster.groovy
             &quot;&quot;&quot;
@@ -167,7 +172,7 @@ spec:
 </flow-definition>
 """
 
-def p = j.createProjectFromXML(name, new ByteArrayInputStream(configXml.getBytes("UTF-8")));
+def p = masterFolder.createProjectFromXML(name, new ByteArrayInputStream(configXml.getBytes("UTF-8")));
 
 logger.info("created $name job")
 
