@@ -5,7 +5,8 @@ import java.util.logging.Logger
 
 //adds a folder to the bluesteel folder with a filter on specific job templates
 Logger logger = Logger.getLogger("init.init_05_create-workshop_setup_job.groovy")
-logger.info("BEGIN docker label for create_template_folder")
+println "init_05_create-workshop_setup_job.groovy"
+logger.info("BEGIN create-workshop_setup_job")
 File disableScript = new File(Jenkins.getInstance().getRootDir(), ".disable-create_template_folder-script")
 if (disableScript.exists()) {
     logger.info("DISABLE create_template_folder script")
@@ -13,17 +14,10 @@ if (disableScript.exists()) {
 }
 
 def j = Jenkins.instance
-Set<String> allowedTypes = new TreeSet <String>()
-def masterFolder = j.getItem(System.properties.'MASTER_NAME')
-
 
 def name = 'workshop-setup'
 logger.info("creating $name job")
-def job = masterFolder.getItem(name)
-if (job != null) {
-  logger.info("job $name already existed so deleting")
-  job.delete()
-}
+
 println "--> creating $name"
 
 def configXml = """
@@ -173,7 +167,7 @@ spec:
 </flow-definition>
 """
 
-def p = masterFolder.createProjectFromXML(name, new ByteArrayInputStream(configXml.getBytes("UTF-8")));
+def p = j.createProjectFromXML(name, new ByteArrayInputStream(configXml.getBytes("UTF-8")));
 
 logger.info("created $name job")
 
