@@ -137,6 +137,7 @@ spec:
               sed -i.bak &apos;s#REPLACE_GITHUB_ORG#\${githubOrg}#&apos; jenkins.yaml
               sed -i.bak &apos;s#REPLACE_WITH_JENKINS_ENCODED_PAT#\${encryptedPAT}#&apos; jenkins.yaml
               sed -i.bak &apos;s#REPLACE_WITH_YOUR_GITHUB_USERNAME#\${githubUsername}#&apos; jenkins.yaml
+              sed -i.bak &apos;s#REPLACE_MASTER_NAME#\${masterName}#&apos; jenkins.yaml
               git add *
               git commit -a -m &apos;updating \${githubOrg}/core-config bundle with encrypted GitHub PAT and GitHub Username&apos;
               git push -u origin master
