@@ -14,8 +14,12 @@ COPY ./init.groovy.d/* /usr/share/jenkins/ref/license-activated-or-renewed-after
 #install suggested and additional plugins
 ENV JENKINS_UC http://jenkins-updates.cloudbees.com
 
+RUN mkdir -p /usr/share/jenkins/ref/plugins
 COPY ./jenkins_ref /usr/share/jenkins/ref
 COPY jenkins-support /usr/local/bin/jenkins-support
+COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
+COPY install-plugins.sh /usr/local/bin/install-plugins.sh
+RUN bash /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 
 COPY jenkins.sh /usr/share/jenkins/ref
 COPY launch.sh /usr/share/jenkins/ref
