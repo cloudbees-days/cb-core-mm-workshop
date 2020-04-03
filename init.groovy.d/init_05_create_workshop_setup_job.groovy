@@ -146,7 +146,7 @@ spec:
           sh &quot;mkdir \${masterName}&quot;
           sh &quot;cp core-config-bundle/*.yaml \${masterName}&quot;
           sh &quot;kubectl cp --namespace \${k8sNamespace} \${masterName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/&quot;
-          sh &quot;kubectl exec --namespace \${k8sNamespace} cjoc-0 -- sed -i &apos;s#&lt;access\\\\/&gt;#&lt;access&gt;\\n&lt;\\\\/access&gt;#&apos; /var/jenkins_home/jcasc-bundles-store/security.xml&quot;
+          sh &quot;kubectl exec --namespace \${k8sNamespace} cjoc-0 -- sed -i &apos;s#&lt;access\\\\/&gt;#&lt;access&gt;\\\\n&lt;\\\\/access&gt;#&apos; /var/jenkins_home/jcasc-bundles-store/security.xml&quot;
           sh &quot;kubectl exec --namespace \${k8sNamespace} cjoc-0 -- sed -i \\&quot;/&lt;\\\\/access&gt;/i\\\\&lt;entry&gt;&lt;string&gt;\${masterName}&lt;/string&gt;&lt;hudson.util.Secret&gt;\${entrySecret}&lt;/hudson.util.Secret&gt;&lt;/entry&gt;\\&quot;  /var/jenkins_home/jcasc-bundles-store/security.xml&quot;
         }
         container(&apos;utils&apos;) {
