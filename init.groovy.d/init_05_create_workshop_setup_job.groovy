@@ -134,12 +134,19 @@ spec:
               git config user.name &quot;\${githubUsername}&quot;
               git remote add origin https://\${githubUsername}:\${githubPAT}@github.com/\${githubOrg}/core-config-bundle.git
               git pull origin master
-              sed -i.bak &apos;s#REPLACE_GITHUB_ORG#\${githubOrg}#&apos; jenkins.yaml
-              sed -i.bak &apos;s#REPLACE_WITH_JENKINS_ENCODED_PAT#\${encryptedPAT}#&apos; jenkins.yaml
-              sed -i.bak &apos;s#REPLACE_WITH_YOUR_GITHUB_USERNAME#\${githubUsername}#&apos; jenkins.yaml
+              sed &apos;s#REPLACE_GITHUB_ORG#\${githubOrg}#&apos; jenkins.yaml
+              sed &apos;s#REPLACE_WITH_JENKINS_ENCODED_PAT#\${encryptedPAT}#&apos; jenkins.yaml
+              sed &apos;s#REPLACE_WITH_YOUR_GITHUB_USERNAME#\${githubUsername}#&apos; jenkins.yaml
               git add *
-              git commit -a -m &apos;updating \${githubOrg}/core-config bundle with encrypted GitHub PAT and GitHub Username&apos;
+              git commit -a -m &apos;updating \${githubOrg}/core-config bundle on master branch with encrypted GitHub PAT and GitHub Username&apos;
               git push -u origin master
+              git fetch
+              git checkout gitops-lab
+              sed &apos;s#REPLACE_GITHUB_ORG#\${githubOrg}#&apos; jenkins.yaml
+              sed &apos;s#REPLACE_WITH_JENKINS_ENCODED_PAT#\${encryptedPAT}#&apos; jenkins.yaml
+              sed &apos;s#REPLACE_WITH_YOUR_GITHUB_USERNAME#\${githubUsername}#&apos; jenkins.yaml
+              git commit -a -m &apos;updating \${githubOrg}/core-config bundle on gitops-lab branch with encrypted GitHub PAT and GitHub Username&apos;
+              git push origin gitops-lab
           &quot;&quot;&quot;)
         }
         container(&apos;kubectl&apos;) {
