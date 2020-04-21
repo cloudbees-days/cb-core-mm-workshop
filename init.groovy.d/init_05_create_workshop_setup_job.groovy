@@ -147,6 +147,7 @@ spec:
               sed -i &apos;s#REPLACE_WITH_YOUR_GITHUB_USERNAME#\${githubUsername}#&apos; jenkins.yaml
               git commit -a -m &apos;updating \${githubOrg}/core-config bundle on gitops-lab branch with encrypted GitHub PAT and GitHub Username&apos;
               git push origin gitops-lab
+              git checkout master
           &quot;&quot;&quot;)
         }
         container(&apos;kubectl&apos;) {
