@@ -117,6 +117,7 @@ spec:
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/core-config-bundle/forks
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/microblog-frontend/forks
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/microblog-backend/forks
+            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;title&quot;:&quot;Add marker file&quot;,&quot;head&quot;:&quot;marker-file&quot;,&quot;base&quot;:&quot;master&quot;}&apos; https://api.github.com/repos/\$githubOrg/microblog-frontend/pulls
           &quot;&quot;&quot;)
          }
       }
