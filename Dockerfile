@@ -11,6 +11,9 @@ RUN mkdir -p /usr/share/jenkins/ref/license-activated-or-renewed-after-expiratio
 #Jenkins system configuration via init groovy scripts - see https://wiki.jenkins-ci.org/display/JENKINS/Configuring+Jenkins+upon+start+up 
 COPY ./init.groovy.d/* /usr/share/jenkins/ref/license-activated-or-renewed-after-expiration.groovy.d/
 
+RUN mkdir -p /usr/share/jenkins/ref/plugins
+COPY cloudbees-github-reporting-0.5.hpi /usr/share/jenkins/ref/plugins/
+
 #install suggested and additional plugins
 ENV JENKINS_UC http://jenkins-updates.cloudbees.com
 
