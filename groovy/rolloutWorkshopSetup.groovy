@@ -2,6 +2,7 @@ import jenkins.model.*;
 import org.jenkinsci.plugins.workflow.libs.*;
 import jenkins.scm.api.SCMSource;
 import jenkins.plugins.git.*;
+import hudson.util.Secret;
 import com.cloudbees.plugins.credentials.impl.*;
 import com.cloudbees.plugins.credentials.*;
 import com.cloudbees.plugins.credentials.domains.*; 
@@ -28,7 +29,7 @@ Credentials gitHubUsernamePATCred = new UsernamePasswordCredentialsImpl(Credenti
 SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), gitHubUsernamePATCred)
 
 def secretCredentialId = "cbdays-github-token-secret"
-new StringCredentialsImpl( CredentialsScope.GLOBAL, secretCredentialId, "GitHub PAT - secret text", gitHubPat);
+new StringCredentialsImpl(CredentialsScope.GLOBAL, secretCredentialId, "GitHub PAT - secret text", Secret.fromString(gitHubPat));
 
 //Add GitHub Server config for webhooks
 GitHubPlugin.configuration().getConfigs().add(new GitHubServerConfig(secretCredentialId));
