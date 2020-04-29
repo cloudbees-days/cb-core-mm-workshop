@@ -29,7 +29,8 @@ Credentials gitHubUsernamePATCred = new UsernamePasswordCredentialsImpl(Credenti
 SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), gitHubUsernamePATCred)
 
 def secretCredentialId = "cbdays-github-token-secret"
-new StringCredentialsImpl(CredentialsScope.GLOBAL, secretCredentialId, "GitHub PAT - secret text", Secret.fromString(gitHubPat));
+Credentials gitHubPATCred = new StringCredentialsImpl(CredentialsScope.GLOBAL, secretCredentialId, "GitHub PAT - secret text", Secret.fromString(gitHubPat));
+SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), gitHubPATCred)
 
 //Add GitHub Server config for webhooks
 GitHubPlugin.configuration().getConfigs().add(new GitHubServerConfig(secretCredentialId));
