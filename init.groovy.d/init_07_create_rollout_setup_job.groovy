@@ -4,19 +4,19 @@ import jenkins.model.Jenkins
 import java.util.logging.Logger
 
 //adds a folder to the bluesteel folder with a filter on specific job templates
-Logger logger = Logger.getLogger("init.init_05_create-workshop_setup_job.groovy")
-println "init_05_create-workshop_setup_job.groovy"
-logger.info("BEGIN docker label for create-workshop_setup_job")
-File disableScript = new File(Jenkins.getInstance().getRootDir(), ".disable-create_template_folder-script")
+Logger logger = Logger.getLogger("init.init_05_create-rollout_setup_job.groovy")
+println "init_07_create-rollout_setup_job.groovy"
+logger.info("BEGIN docker label for create-rollout_setup_job")
+File disableScript = new File(Jenkins.getInstance().getRootDir(), ".disable-create_rollout_setup_job-script")
 if (disableScript.exists()) {
-    logger.info("DISABLE create_template_folder script")
+    logger.info("DISABLE create_rollout_setup_job script")
     return
 }
 
 def j = Jenkins.instance
 def masterFolder = j.getItem(System.properties.'MASTER_NAME')
 
-def name = 'core-workshop-setup'
+def name = 'rollout-workshop-setup'
 logger.info("creating $name job")
 def job = masterFolder.getItem(name)
 if (job != null) {
@@ -114,62 +114,23 @@ spec:
           sh(script: &quot;&quot;&quot;
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/pipeline-library/forks
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/forks
-            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;title&quot;:&quot;Add event trigger&quot;,&quot;head&quot;:&quot;vuejs-event-trigger&quot;,&quot;base&quot;:&quot;master&quot;}&apos; https://api.github.com/repos/\$githubOrg/pipeline-template-catalog/pulls
-            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/core-config-bundle/forks
-            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;title&quot;:&quot;GitOps lab updates&quot;,&quot;head&quot;:&quot;gitops-lab&quot;,&quot;base&quot;:&quot;master&quot;}&apos; https://api.github.com/repos/\$githubOrg/core-config-bundle/pulls
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/microblog-frontend/forks
-            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/microblog-backend/forks
-            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;title&quot;:&quot;Add marker file&quot;,&quot;head&quot;:&quot;marker-file&quot;,&quot;base&quot;:&quot;master&quot;}&apos; https://api.github.com/repos/\$githubOrg/microblog-frontend/pulls
           &quot;&quot;&quot;)
          }
       }
     }
-    stage(&apos;Create Config Bundle&apos;) {
+    stage(&apos;Create Frontend Job&apos;) {
       steps {
         echo &quot;master name:  \${masterName}&quot;
-        echo &quot;encrypted token: \${encryptedPAT}&quot;
-        container(&apos;utils&apos;) {
-          sh(script: &quot;&quot;&quot;
-              mkdir core-config-bundle
-              cd core-config-bundle
-              git init
-              git config user.email &quot;deployBot@cb-sa.io&quot;
-              git config user.name &quot;\${githubUsername}&quot;
-              git remote add origin https://\${githubUsername}:\${githubPAT}@github.com/\${githubOrg}/core-config-bundle.git
-              git pull origin master
-              sed -i &apos;s#REPLACE_GITHUB_ORG#\${githubOrg}#&apos; jenkins.yaml
-              sed -i &apos;s#REPLACE_WITH_JENKINS_ENCODED_PAT#\${encryptedPAT}#&apos; jenkins.yaml
-              sed -i &apos;s#REPLACE_WITH_YOUR_GITHUB_USERNAME#\${githubUsername}#&apos; jenkins.yaml
-              git add *
-              git commit -a -m &apos;updating \${githubOrg}/core-config bundle on master branch with encrypted GitHub PAT and GitHub Username&apos;
-              git push -u origin master
-              git fetch
-              git checkout gitops-lab
-              sed -i &apos;s#REPLACE_GITHUB_ORG#\${githubOrg}#&apos; jenkins.yaml
-              sed -i &apos;s#REPLACE_WITH_JENKINS_ENCODED_PAT#\${encryptedPAT}#&apos; jenkins.yaml
-              sed -i &apos;s#REPLACE_WITH_YOUR_GITHUB_USERNAME#\${githubUsername}#&apos; jenkins.yaml
-              git commit -a -m &apos;updating \${githubOrg}/core-config bundle on gitops-lab branch with encrypted GitHub PAT and GitHub Username&apos;
-              git push origin gitops-lab
-              git checkout master
-          &quot;&quot;&quot;)
-        }
-        container(&apos;kubectl&apos;) {
-          sh &quot;mkdir \${masterName}&quot;
-          sh &quot;cp core-config-bundle/*.yaml \${masterName}&quot;
-          sh &quot;kubectl cp --namespace \${k8sNamespace} \${masterName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/&quot;
-          sh &quot;kubectl exec --namespace \${k8sNamespace} cjoc-0 -- sed -i &apos;s#&lt;access\\\\/&gt;#&lt;access&gt;\\\\n&lt;\\\\/access&gt;#&apos; /var/jenkins_home/jcasc-bundles-store/security.xml&quot;
-          sh &quot;kubectl exec --namespace \${k8sNamespace} cjoc-0 -- sed -i \\&quot;/&lt;\\\\/access&gt;/i\\\\&lt;entry&gt;&lt;string&gt;\${masterName}&lt;/string&gt;&lt;hudson.util.Secret&gt;\${entrySecret}&lt;/hudson.util.Secret&gt;&lt;/entry&gt;\\&quot;  /var/jenkins_home/jcasc-bundles-store/security.xml&quot;
-        }
         container(&apos;utils&apos;) {
           //download CLI client from current master
           sh &quot;curl -O http://teams-\${masterName}/teams-\${masterName}/jnlpJars/jenkins-cli.jar&quot;
-          sh &quot;curl -O https://raw.githubusercontent.com/cloudbees-days/cb-core-oc-workshop/master/stopAndStartMaster.groovy&quot;
-          sh &quot;sed -i &apos;s#REPLACE_MASTER_NAME#\${masterName}#&apos; stopAndStartMaster.groovy&quot;
+          sh &quot;curl -O https://raw.githubusercontent.com/cloudbees-days/cb-core-mm-workshop/master/groovy/rolloutWorkshopSetup.groovy&quot;
           withCredentials([usernamePassword(credentialsId: &apos;cli-username-token&apos;, usernameVariable: &apos;USERNAME&apos;, passwordVariable: &apos;PASSWORD&apos;)]) {
             sh &quot;&quot;&quot;
-              alias cli=&apos;java -jar jenkins-cli.jar -s \\&apos;http://cjoc/cjoc/\\&apos; -auth \$USERNAME:\$PASSWORD&apos;
+              alias cli=&apos;java -jar jenkins-cli.jar -s \\&apos;http://teams-\${masterName}/teams-\${masterName}//\\&apos; -auth \$USERNAME:\$PASSWORD&apos;
               echo &quot;Restart Master \${masterName}&quot;
-              cli groovy = &lt; stopAndStartMaster.groovy
+              cli groovy = &lt; rolloutWorkshopSetup.groovy \$githubPAT \$githubUsername \$githubOrg
             &quot;&quot;&quot;
           }
         }
