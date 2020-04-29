@@ -126,11 +126,14 @@ spec:
           //download CLI client from current master
           sh &quot;curl -O http://teams-\${masterName}/teams-\${masterName}/jnlpJars/jenkins-cli.jar&quot;
           sh &quot;curl -O https://raw.githubusercontent.com/cloudbees-days/cb-core-mm-workshop/master/groovy/rolloutWorkshopSetup.groovy&quot;
+          sh &quot;sed -i &apos;s#REPLACE_GITHUB_PAT#\${githubPAT}#&apos; rolloutWorkshopSetup.groovy&quot;
+          sh &quot;sed -i &apos;s#REPLACE_GITHUB_USERNAME#\${githubUsername}#&apos; rolloutWorkshopSetup.groovy&quot;
+          sh &quot;sed -i &apos;s#REPLACE_GITHUB_ORG#\${githubOrg}#&apos; rolloutWorkshopSetup.groovy&quot;
           withCredentials([usernamePassword(credentialsId: &apos;cli-username-token&apos;, usernameVariable: &apos;USERNAME&apos;, passwordVariable: &apos;PASSWORD&apos;)]) {
             sh &quot;&quot;&quot;
               alias cli=&apos;java -jar jenkins-cli.jar -s \\&apos;http://teams-\${masterName}/teams-\${masterName}//\\&apos; -auth \$USERNAME:\$PASSWORD&apos;
-              echo &quot;Restart Master \${masterName}&quot;
-              cli groovy = &lt; rolloutWorkshopSetup.groovy \$githubPAT \$githubUsername \$githubOrg
+              echo &quot;Create &quot;
+              cli groovy = &lt; rolloutWorkshopSetup.groovy 
             &quot;&quot;&quot;
           }
         }

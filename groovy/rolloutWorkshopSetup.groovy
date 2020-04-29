@@ -18,9 +18,9 @@ def jenkins = Jenkins.instance
 def masterFolder = jenkins.getItem(System.properties.'MASTER_NAME')
 
 //cli groovy = &lt; rollout_workshop_setup.groovy $gitHubPat $githubUsername $githubOrg
-String gitHubPat = this.args[0]
-String githubUsername = this.args[1]
-String githubOrg = this.args[2]
+String gitHubPat = "REPLACE_GITHUB_PAT"
+String githubUsername = "REPLACE_GITHUB_USERNAME"
+String githubOrg = "REPLACE_GITHUB_ORG"
 
 //GitHub Credentials
 def credentialId = "cbdays-github-username-pat"
