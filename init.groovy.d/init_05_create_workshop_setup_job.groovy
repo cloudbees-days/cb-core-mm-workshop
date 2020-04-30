@@ -114,11 +114,12 @@ spec:
           sh(script: &quot;&quot;&quot;
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/pipeline-library/forks
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/forks
-            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;title&quot;:&quot;Add event trigger&quot;,&quot;head&quot;:&quot;vuejs-event-trigger&quot;,&quot;base&quot;:&quot;master&quot;}&apos; https://api.github.com/repos/\$githubOrg/pipeline-template-catalog/pulls
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/core-config-bundle/forks
-            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;title&quot;:&quot;GitOps lab updates&quot;,&quot;head&quot;:&quot;gitops-lab&quot;,&quot;base&quot;:&quot;master&quot;}&apos; https://api.github.com/repos/\$githubOrg/core-config-bundle/pulls
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/microblog-frontend/forks
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/microblog-backend/forks
+            sleep 3
+            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;title&quot;:&quot;Add event trigger&quot;,&quot;head&quot;:&quot;vuejs-event-trigger&quot;,&quot;base&quot;:&quot;master&quot;}&apos; https://api.github.com/repos/\$githubOrg/pipeline-template-catalog/pulls
+            curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;title&quot;:&quot;GitOps lab updates&quot;,&quot;head&quot;:&quot;gitops-lab&quot;,&quot;base&quot;:&quot;master&quot;}&apos; https://api.github.com/repos/\$githubOrg/core-config-bundle/pulls
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;title&quot;:&quot;Add marker file&quot;,&quot;head&quot;:&quot;marker-file&quot;,&quot;base&quot;:&quot;master&quot;}&apos; https://api.github.com/repos/\$githubOrg/microblog-frontend/pulls
           &quot;&quot;&quot;)
          }
