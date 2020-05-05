@@ -112,6 +112,12 @@ spec:
         echo &quot;GitHub Organization: \${githubOrg}&quot;
         container(&apos;utils&apos;) {
           sh(script: &quot;&quot;&quot;
+            curl --silent -X DELETE -H 'Authorization: token \$githubPat' https://api.github.com/repos/\${githubOrg}/pipeline-library
+            curl --silent -X DELETE -H 'Authorization: token \$githubPat' https://api.github.com/repos/\${githubOrg}/pipeline-template-catalog
+            curl --silent -X DELETE -H 'Authorization: token \$githubPat' https://api.github.com/repos/\${githubOrg}/core-config-bundle
+            curl --silent -X DELETE -H 'Authorization: token \$githubPat' https://api.github.com/repos/\${githubOrg}/microblog-frontend
+            curl --silent -X DELETE -H 'Authorization: token \$githubPat' https://api.github.com/repos/\${githubOrg}/microblog-backend
+            sleep 1
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/pipeline-library/forks
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/forks
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/core-config-bundle/forks
@@ -131,7 +137,8 @@ spec:
         echo &quot;encrypted token: \${encryptedPAT}&quot;
         container(&apos;utils&apos;) {
           sh(script: &quot;&quot;&quot;
-              mkdir core-config-bundle
+              rm -rf ./core-config-bundle || true
+              mkdir -p core-config-bundle
               cd core-config-bundle
               git init
               git config user.email &quot;deployBot@cb-sa.io&quot;
@@ -155,8 +162,10 @@ spec:
           &quot;&quot;&quot;)
         }
         container(&apos;kubectl&apos;) {
-          sh &quot;mkdir \${masterName}&quot;
+          sh &quot;rm -rf ./\${masterName}&quot;
+          sh &quot;mkdir -p \${masterName}&quot;
           sh &quot;cp core-config-bundle/*.yaml \${masterName}&quot;
+          sh &quot;kubectl exec --namespace \${k8sNamespace} cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/\${masterName} || true&quot;
           sh &quot;kubectl cp --namespace \${k8sNamespace} \${masterName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/&quot;
           sh &quot;kubectl exec --namespace \${k8sNamespace} cjoc-0 -- sed -i &apos;s#&lt;access\\\\/&gt;#&lt;access&gt;\\\\n&lt;\\\\/access&gt;#&apos; /var/jenkins_home/jcasc-bundles-store/security.xml&quot;
           sh &quot;kubectl exec --namespace \${k8sNamespace} cjoc-0 -- sed -i \\&quot;/&lt;\\\\/access&gt;/i\\\\&lt;entry&gt;&lt;string&gt;\${masterName}&lt;/string&gt;&lt;hudson.util.Secret&gt;\${entrySecret}&lt;/hudson.util.Secret&gt;&lt;/entry&gt;\\&quot;  /var/jenkins_home/jcasc-bundles-store/security.xml&quot;
