@@ -112,6 +112,10 @@ spec:
         echo &quot;GitHub Organization: \${githubOrg}&quot;
         container(&apos;utils&apos;) {
           sh(script: &quot;&quot;&quot;
+            curl --silent -X DELETE -H 'Authorization: token \$githubPat' https://api.github.com/repos/\${githubOrg}/pipeline-library
+            curl --silent -X DELETE -H 'Authorization: token \$githubPat' https://api.github.com/repos/\${githubOrg}/pipeline-template-catalog
+            curl --silent -X DELETE -H 'Authorization: token \$githubPat' https://api.github.com/repos/\${githubOrg}/microblog-frontend
+            sleep 1
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/pipeline-library/forks
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/forks
             curl --silent -H &quot;Authorization: token \$githubPAT&quot; --data &apos;{&quot;organization&quot;:&quot;\${githubOrg}&quot;}&apos; https://api.github.com/repos/cloudbees-days/microblog-frontend/forks

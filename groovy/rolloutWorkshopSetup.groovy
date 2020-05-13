@@ -41,7 +41,7 @@ SCMSource libScm = new org.jenkinsci.plugins.github_branch_source.GitHubSCMSourc
 LibraryRetriever libRetriever = new SCMSourceRetriever(libScm)
 LibraryConfiguration libConfig = new LibraryConfiguration("cb-days", libRetriever)
 libConfig.setDefaultVersion("master")
-libConfig.setImplicit(true)
+libConfig.setImplicit(false)
 List<LibraryConfiguration> libraries= new ArrayList<LibraryConfiguration>()
 libraries.add(libConfig)
 globalLibs.setLibraries(libraries)
