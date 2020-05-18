@@ -68,7 +68,7 @@ def frontendJobXml = """
         <values class="tree-map">
           <entry>
             <string>deploymentDomain</string>
-            <string>v1.k8s.tel</string>
+            <string>cbws.io</string>
           </entry>
           <entry>
             <string>gcpProject</string>
